@@ -19,22 +19,9 @@
  */
 package com.p6spy.engine.spy;
 
-import java.io.IOException;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.CopyOnWriteArrayList;
-
-import javax.management.InstanceAlreadyExistsException;
-import javax.management.InstanceNotFoundException;
-import javax.management.MBeanRegistrationException;
-import javax.management.MalformedObjectNameException;
-import javax.management.NotCompliantMBeanException;
-
 import com.p6spy.engine.common.P6LogQuery;
 import com.p6spy.engine.common.P6Util;
+import com.p6spy.engine.event.EventManager;
 import com.p6spy.engine.proxy.GenericInvocationHandler;
 import com.p6spy.engine.spy.option.EnvironmentVariables;
 import com.p6spy.engine.spy.option.P6OptionChangedListener;
@@ -42,6 +29,19 @@ import com.p6spy.engine.spy.option.P6OptionsRepository;
 import com.p6spy.engine.spy.option.P6OptionsSource;
 import com.p6spy.engine.spy.option.SpyDotProperties;
 import com.p6spy.engine.spy.option.SystemProperties;
+
+import javax.management.InstanceAlreadyExistsException;
+import javax.management.InstanceNotFoundException;
+import javax.management.MBeanRegistrationException;
+import javax.management.MalformedObjectNameException;
+import javax.management.NotCompliantMBeanException;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class P6ModuleManager {
 
@@ -51,6 +51,7 @@ public class P6ModuleManager {
   private final Map<Class<? extends P6LoadableOptions>, P6LoadableOptions> allOptions = new HashMap<Class<? extends P6LoadableOptions>, P6LoadableOptions>();
   private final List<P6Factory> factories = new CopyOnWriteArrayList<P6Factory>();
   private final P6MBeansRegistry mBeansRegistry = new P6MBeansRegistry();
+  private final EventManager eventManager = new EventManager();
 
   private final P6OptionsRepository optionsRepository = new P6OptionsRepository();
 
@@ -61,11 +62,6 @@ public class P6ModuleManager {
     initMe();
   }
 
-  /**
-   * 
-   * @param spyPropertiesJMX
-   *          manually (via JMX) set properties to be kept across auto-reloads.
-   */
   private synchronized static void initMe() {
     try {
       cleanUp();
@@ -267,5 +263,8 @@ public class P6ModuleManager {
   public void unregisterOptionChangedListener(P6OptionChangedListener listener) {
     optionsRepository.unregisterOptionChangedListener(listener);
   }
-	
+
+  public EventManager getEventManager() {
+    return eventManager;
+  }
 }
