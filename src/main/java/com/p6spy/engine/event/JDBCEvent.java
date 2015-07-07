@@ -19,10 +19,14 @@
  */
 package com.p6spy.engine.event;
 
+import com.p6spy.engine.common.StopWatch;
 /**
  * Base class for JDBC events
  */
 public class JDBCEvent extends AbstractEvent {
+  private StopWatch stopWatch;
+  private int connectionId;
+
   /**
    * Constructs a new Event.
    *
@@ -31,5 +35,21 @@ public class JDBCEvent extends AbstractEvent {
    */
   public JDBCEvent(Object source) {
     super(source);
+  }
+
+  public int getConnectionId() {
+    return connectionId;
+  }
+  public void setConnectionId(int connectionId) {
+    this.connectionId = connectionId;
+  }
+  public StopWatch getStopWatch() {
+    return stopWatch;
+  }
+  public void setStopWatch(StopWatch stopWatch) {
+    this.stopWatch = stopWatch;
+    if (!stopWatch.stopped()) {
+      stopWatch.stop();
+    }
   }
 }
