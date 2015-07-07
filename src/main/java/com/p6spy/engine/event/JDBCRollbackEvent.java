@@ -18,18 +18,18 @@
  * #L%
  */
 package com.p6spy.engine.event;
-
+import java.sql.Connection;
 /**
- * Base class for JDBC events
+ * Event fired immediately after {@link Connection#rollback()} is invoked.
  */
-public class JDBCEvent extends AbstractEvent {
+public class JDBCRollbackEvent extends JDBCEvent {
   /**
    * Constructs a new Event.
    *
    * @param source The object on which the Event initially occurred.
    * @throws IllegalArgumentException if source is null.
    */
-  public JDBCEvent(Object source) {
+  public JDBCRollbackEvent(Object source) {
     super(source);
   }
 }

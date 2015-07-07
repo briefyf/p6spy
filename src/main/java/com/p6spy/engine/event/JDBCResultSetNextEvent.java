@@ -20,16 +20,16 @@
 package com.p6spy.engine.event;
 
 /**
- * Base class for JDBC events
+ * Event fired immediately after {@link java.sql.ResultSet#next()} is invoked.
  */
-public class JDBCEvent extends AbstractEvent {
+public class JDBCResultSetNextEvent extends JDBCEvent {
   /**
    * Constructs a new Event.
    *
    * @param source The object on which the Event initially occurred.
    * @throws IllegalArgumentException if source is null.
    */
-  public JDBCEvent(Object source) {
+  public JDBCResultSetNextEvent(Object source) {
     super(source);
   }
 }

@@ -19,17 +19,12 @@
  */
 package com.p6spy.engine.event;
 
+import java.sql.Connection;
 /**
- * Base class for JDBC events
+ * Event fired immediately after {@link Connection#commit()} is invoked.
  */
-public class JDBCEvent extends AbstractEvent {
-  /**
-   * Constructs a new Event.
-   *
-   * @param source The object on which the Event initially occurred.
-   * @throws IllegalArgumentException if source is null.
-   */
-  public JDBCEvent(Object source) {
+public class JDBCCommitEvent extends JDBCEvent {
+  public JDBCCommitEvent(Object source) {
     super(source);
   }
 }
