@@ -5,7 +5,7 @@ package com.p6spy.engine.event;
  */
 public class JDBCEvent extends AbstractEvent {
   /**
-   * Constructs a prototypical Event.
+   * Constructs a new Event.
    *
    * @param source The object on which the Event initially occurred.
    * @throws IllegalArgumentException if source is null.
