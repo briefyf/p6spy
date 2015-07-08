@@ -19,6 +19,8 @@
  */
 package com.p6spy.engine.event;
 
+import com.p6spy.engine.common.PreparedStatementInformation;
+import com.p6spy.engine.common.SQLWrapper;
 import com.p6spy.engine.common.StopWatch;
 /**
  * Base class for JDBC events
@@ -26,6 +28,8 @@ import com.p6spy.engine.common.StopWatch;
 public class JDBCEvent extends AbstractEvent {
   private StopWatch stopWatch;
   private int connectionId;
+  private Throwable thrownException;
+  private SQLWrapper sqlWrapper;
 
   /**
    * Constructs a new Event.
@@ -40,16 +44,31 @@ public class JDBCEvent extends AbstractEvent {
   public int getConnectionId() {
     return connectionId;
   }
-  public void setConnectionId(int connectionId) {
-    this.connectionId = connectionId;
-  }
+
   public StopWatch getStopWatch() {
     return stopWatch;
   }
-  public void setStopWatch(StopWatch stopWatch) {
+
+  public JDBCEvent withConnectionId(final int connectionId) {
+    this.connectionId = connectionId;
+    return this;
+  }
+
+  public JDBCEvent withStopWatch(final StopWatch stopWatch) {
     this.stopWatch = stopWatch;
     if (!stopWatch.stopped()) {
       stopWatch.stop();
     }
+    return this;
+  }
+
+  public JDBCEvent withThrownException(final Throwable thrownException) {
+    this.thrownException = thrownException;
+    return this;
+  }
+
+  public JDBCEvent withSQLWrapper(SQLWrapper sqlWrapper) {
+    this.sqlWrapper = sqlWrapper;
+    return this;
   }
 }

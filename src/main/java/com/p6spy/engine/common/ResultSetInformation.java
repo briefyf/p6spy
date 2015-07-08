@@ -28,7 +28,7 @@ import java.util.Map;
  * @author Quinton McCombs
  * @since 09/2013
  */
-public class ResultSetInformation implements Loggable {
+public class ResultSetInformation implements SQLWrapper {
 
   private final StatementInformation statementInformation;
   private String query;

@@ -20,6 +20,7 @@
 package com.p6spy.engine.logging;
 
 import com.p6spy.engine.common.ConnectionInformation;
+import com.p6spy.engine.event.EventPublisher;
 import com.p6spy.engine.proxy.ProxyFactory;
 
 import java.lang.reflect.Method;

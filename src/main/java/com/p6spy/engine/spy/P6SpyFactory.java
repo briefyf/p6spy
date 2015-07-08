@@ -19,19 +19,12 @@
  */
 package com.p6spy.engine.spy;
 
-import com.p6spy.engine.event.EventManager;
-import com.p6spy.engine.spy.option.P6OptionsRepository;
-
 import java.sql.Connection;
 import java.sql.SQLException;
 
+import com.p6spy.engine.spy.option.P6OptionsRepository;
+
 public class P6SpyFactory implements P6Factory {
-
-  private EventManager eventManager;
-
-  public P6SpyFactory(EventManager eventManager) {
-    this.eventManager = eventManager;
-  }
 
   @Override
   public P6LoadableOptions getOptions(P6OptionsRepository optionsRepository) {
@@ -42,11 +35,6 @@ public class P6SpyFactory implements P6Factory {
   public Connection getConnection(Connection conn) throws SQLException {
     // no wrapping required here
     return conn;
-  }
-
-  @Override
-  public EventManager getEventManager() {
-    return eventManager;
   }
 
 }

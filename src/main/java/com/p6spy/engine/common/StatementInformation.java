@@ -24,7 +24,7 @@ package com.p6spy.engine.common;
  * @author Quinton McCombs
  * @since 09/2013
  */
-public class StatementInformation implements Loggable {
+public class StatementInformation implements SQLWrapper {
 
   private final ConnectionInformation connectionInformation;
   private String statementQuery;

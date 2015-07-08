@@ -19,7 +19,6 @@
  */
 package com.p6spy.engine.outage;
 
-import com.p6spy.engine.event.EventManager;
 import com.p6spy.engine.proxy.ProxyFactory;
 import com.p6spy.engine.spy.P6Factory;
 import com.p6spy.engine.spy.P6LoadableOptions;
@@ -29,12 +28,6 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 public class P6OutageFactory implements P6Factory {
-
-  private EventManager eventManager;
-
-  public P6OutageFactory(EventManager eventManager) {
-    this.eventManager = eventManager;
-  }
 
   @Override
   public Connection getConnection(Connection conn) throws SQLException {
@@ -47,8 +40,4 @@ public class P6OutageFactory implements P6Factory {
     return new P6OutageOptions(optionsRepository);
   }
 
-  @Override
-  public EventManager getEventManager() {
-    return eventManager;
-  }
 }

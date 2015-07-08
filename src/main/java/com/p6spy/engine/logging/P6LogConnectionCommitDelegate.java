@@ -21,7 +21,11 @@ package com.p6spy.engine.logging;
 
 import com.p6spy.engine.common.ConnectionInformation;
 import com.p6spy.engine.common.P6LogQuery;
+import com.p6spy.engine.common.StopWatch;
+import com.p6spy.engine.event.JDBCCommitEvent;
+import com.p6spy.engine.event.JDBCRollbackEvent;
 import com.p6spy.engine.proxy.Delegate;
+import com.p6spy.engine.spy.P6ModuleManager;
 
 import java.lang.reflect.Method;
 
@@ -36,12 +40,22 @@ class P6LogConnectionCommitDelegate implements Delegate {
 
   @Override
   public Object invoke(final Object proxy, final Object underlying, final Method method, final Object[] args) throws Throwable {
-    long startTime = System.currentTimeMillis();
+    StopWatch stopWatch = new StopWatch().start();
+    Throwable thrownException = null;
 
     try {
       return method.invoke(underlying, args);
+    } catch (Throwable t) {
+      thrownException = t;
+      throw t;
     } finally {
-      P6LogQuery.logElapsed(connectionInformation.getConnectionId(), startTime, Category.COMMIT, "", "");
+      P6ModuleManager.getInstance().getEventPublisher().publish(
+        new JDBCCommitEvent(underlying)
+          .withConnectionId(connectionInformation.getConnectionId())
+          .withStopWatch(stopWatch)
+          .withThrownException(thrownException)
+      );
+      P6LogQuery.logElapsed(connectionInformation.getConnectionId(), stopWatch.startTimeMs(), Category.COMMIT, "", "");
     }
   }
 }

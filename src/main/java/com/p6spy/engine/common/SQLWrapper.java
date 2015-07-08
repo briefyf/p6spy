@@ -24,7 +24,7 @@ package com.p6spy.engine.common;
  * 
  * @author Peter Butkovic
  */
-public interface Loggable {
+public interface SQLWrapper {
 
   /**
    * @return Original {@code SQL}.

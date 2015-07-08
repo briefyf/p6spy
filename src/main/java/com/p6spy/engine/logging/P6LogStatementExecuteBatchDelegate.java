@@ -21,7 +21,10 @@ package com.p6spy.engine.logging;
 
 import com.p6spy.engine.common.P6LogQuery;
 import com.p6spy.engine.common.StatementInformation;
+import com.p6spy.engine.common.StopWatch;
+import com.p6spy.engine.event.JDBCStatementExecuteBatchEvent;
 import com.p6spy.engine.proxy.Delegate;
+import com.p6spy.engine.spy.P6ModuleManager;
 
 import java.lang.reflect.Method;
 
@@ -35,13 +38,23 @@ class P6LogStatementExecuteBatchDelegate implements Delegate {
 
   @Override
   public Object invoke(final Object proxy, final Object underlying, final Method method, final Object[] args) throws Throwable {
-    long startTime = System.currentTimeMillis();
+    StopWatch stopWatch = new StopWatch().start();
+    Throwable thrownException = null;
 
     try {
       return method.invoke(underlying, args);
-    }
-    finally {
-      P6LogQuery.logElapsed(statementInformation.getConnectionId(), startTime, Category.STATEMENT, statementInformation);
+    } catch (Throwable t) {
+      thrownException = t;
+      throw t;
+    } finally {
+      P6ModuleManager.getInstance().getEventPublisher().publish(
+        new JDBCStatementExecuteBatchEvent(underlying)
+          .withConnectionId(statementInformation.getConnectionId())
+          .withStopWatch(stopWatch)
+          .withThrownException(thrownException)
+          .withSQLWrapper(statementInformation)
+      );
+      P6LogQuery.logElapsed(statementInformation.getConnectionId(), stopWatch.startTimeMs(), Category.STATEMENT, statementInformation);
     }
   }
 }

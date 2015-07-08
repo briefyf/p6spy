@@ -180,9 +180,9 @@ public class P6LogQuery implements P6OptionChangedListener {
     }
   }
 
-  static public void log(Category category, Loggable loggable) {
-    if (logger != null && isCategoryOk(category) && isLoggable(loggable.getSql())) {
-      doLog(-1, category, loggable.getSql(), loggable.getSqlWithValues());
+  static public void log(Category category, SQLWrapper SQLWrapper) {
+    if (logger != null && isCategoryOk(category) && isLoggable(SQLWrapper.getSql())) {
+      doLog(-1, category, SQLWrapper.getSql(), SQLWrapper.getSqlWithValues());
     }
   }
 
@@ -199,17 +199,17 @@ public class P6LogQuery implements P6OptionChangedListener {
     }
   }
   
-  static public void logElapsed(int connectionId, long startTime, Category category, Loggable loggable) {
-    logElapsed(connectionId, startTime, System.currentTimeMillis(), category, loggable);
+  static public void logElapsed(int connectionId, long startTime, Category category, SQLWrapper SQLWrapper) {
+    logElapsed(connectionId, startTime, System.currentTimeMillis(), category, SQLWrapper);
   }
 
-  static public void logElapsed(int connectionId, long startTime, long endTime, Category category, Loggable loggable) {
+  static public void logElapsed(int connectionId, long startTime, long endTime, Category category, SQLWrapper SQLWrapper) {
     // usually an expensive operation => cache where possible
     String sql = null;
-    if (logger != null && meetsThresholdRequirement(endTime - startTime) && isCategoryOk(category) && isLoggable(sql = loggable.getSql())) {
-      doLogElapsed(connectionId, startTime, endTime, category, sql, loggable.getSqlWithValues());
+    if (logger != null && meetsThresholdRequirement(endTime - startTime) && isCategoryOk(category) && isLoggable(sql = SQLWrapper.getSql())) {
+      doLogElapsed(connectionId, startTime, endTime, category, sql, SQLWrapper.getSqlWithValues());
     } else if (isDebugEnabled()) {
-      sql = loggable.getSqlWithValues();
+      sql = SQLWrapper.getSqlWithValues();
       debug("P6Spy intentionally did not log category: " + category + ", statement: " + sql + "  Reason: logger=" + logger + ", isLoggable="
           + isLoggable(sql) + ", isCategoryOk=" + isCategoryOk(category) + ", meetsTreshold=" + meetsThresholdRequirement(endTime - startTime));
     }

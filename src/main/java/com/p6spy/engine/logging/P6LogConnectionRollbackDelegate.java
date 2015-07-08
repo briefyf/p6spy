@@ -22,10 +22,9 @@ package com.p6spy.engine.logging;
 import com.p6spy.engine.common.ConnectionInformation;
 import com.p6spy.engine.common.P6LogQuery;
 import com.p6spy.engine.common.StopWatch;
-import com.p6spy.engine.event.EventPublisher;
-import com.p6spy.engine.event.JDBCEvent;
 import com.p6spy.engine.event.JDBCRollbackEvent;
 import com.p6spy.engine.proxy.Delegate;
+import com.p6spy.engine.spy.P6ModuleManager;
 
 import java.lang.reflect.Method;
 
@@ -35,26 +34,29 @@ class P6LogConnectionRollbackDelegate implements Delegate {
 
 
   private final ConnectionInformation connectionInformation;
-  private final EventPublisher eventPublisher;
 
-  public P6LogConnectionRollbackDelegate(final ConnectionInformation connectionInformation, final EventPublisher eventPublisher) {
+  public P6LogConnectionRollbackDelegate(final ConnectionInformation connectionInformation) {
     this.connectionInformation = connectionInformation;
-    this.eventPublisher = eventPublisher;
   }
 
   @Override
   public Object invoke(final Object proxy, final Object underlying, final Method method, final Object[] args) throws Throwable {
-    long startTime = System.currentTimeMillis();
-    StopWatch sw = new StopWatch().start();
+    StopWatch stopWatch = new StopWatch().start();
+    Throwable thrownException = null;
 
     try {
       return method.invoke(underlying, args);
+    } catch (Throwable t) {
+      thrownException = t;
+      throw t;
     } finally {
-      JDBCEvent event = new JDBCRollbackEvent(underlying);
-      event.setConnectionId(connectionInformation.getConnectionId());
-      event.setStopWatch(sw);
-      eventPublisher.publish(new JDBCRollbackEvent(underlying));
-      P6LogQuery.logElapsed(connectionInformation.getConnectionId(), startTime, Category.ROLLBACK, "", "");
+      P6ModuleManager.getInstance().getEventPublisher().publish(
+        new JDBCRollbackEvent(underlying)
+          .withConnectionId(connectionInformation.getConnectionId())
+          .withStopWatch(stopWatch)
+          .withThrownException(thrownException)
+      );
+      P6LogQuery.logElapsed(connectionInformation.getConnectionId(), stopWatch.startTimeMs(), Category.ROLLBACK, "", "");
     }
   }
 }

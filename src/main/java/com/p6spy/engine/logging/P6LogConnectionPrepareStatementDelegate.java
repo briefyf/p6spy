@@ -20,6 +20,7 @@
 package com.p6spy.engine.logging;
 
 import com.p6spy.engine.common.ConnectionInformation;
+import com.p6spy.engine.event.EventPublisher;
 import com.p6spy.engine.proxy.ProxyFactory;
 
 import java.lang.reflect.Method;
@@ -37,8 +38,8 @@ public class P6LogConnectionPrepareStatementDelegate extends P6LogConnectionCrea
   public Object invoke(final Object proxy, final Object underlying, final Method method, final Object[] args) throws Throwable {
     PreparedStatement statement = (PreparedStatement) method.invoke(underlying, args);
     String query = (String) args[0];
-    P6LogPreparedStatementInvocationHandler invocationHandler = new P6LogPreparedStatementInvocationHandler(statement,
-        getConnectionInformation(), query);
+    P6LogPreparedStatementInvocationHandler invocationHandler =
+      new P6LogPreparedStatementInvocationHandler(statement,getConnectionInformation(), query);
     return ProxyFactory.createProxy(statement, invocationHandler);
   }
 

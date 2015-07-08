@@ -31,7 +31,7 @@ import java.util.Map;
  * @author Quinton McCombs
  * @since 09/2013
  */
-public class PreparedStatementInformation extends StatementInformation implements Loggable {
+public class PreparedStatementInformation extends StatementInformation implements SQLWrapper {
   private static final char[] HEX_CHARS = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
   private final Map<Integer, Object> parameterValues = new HashMap<Integer, Object>();
 

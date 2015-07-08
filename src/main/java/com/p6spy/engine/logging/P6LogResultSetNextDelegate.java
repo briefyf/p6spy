@@ -21,7 +21,11 @@ package com.p6spy.engine.logging;
 
 import com.p6spy.engine.common.P6LogQuery;
 import com.p6spy.engine.common.ResultSetInformation;
+import com.p6spy.engine.common.StopWatch;
+import com.p6spy.engine.event.JDBCResultSetNextEvent;
+import com.p6spy.engine.event.JDBCRollbackEvent;
 import com.p6spy.engine.proxy.Delegate;
+import com.p6spy.engine.spy.P6ModuleManager;
 
 import java.lang.reflect.Method;
 
@@ -49,7 +53,8 @@ class P6LogResultSetNextDelegate implements Delegate {
    */
   @Override
   public Object invoke(final Object proxy, final Object underlying, final Method method, final Object[] args) throws Throwable {
-    long startTime = System.currentTimeMillis();
+    StopWatch stopWatch = new StopWatch().start();
+    Throwable thrownException = null;
     Object result = null;
     try {
       
@@ -69,11 +74,21 @@ class P6LogResultSetNextDelegate implements Delegate {
       }
       
       return result;
+    } catch (Throwable t) {
+      thrownException = t;
+      throw t;
     } finally {
       // the result of the proxied method call will be true or false since this is used to proxy the call to ResultSet.next()
       // we do not need to log the call if the result was false as it means that there were no more results.
       if( Boolean.TRUE.equals(result) ) {
-        P6LogQuery.logElapsed(resultSetInformation.getConnectionId(), startTime, Category.RESULT, resultSetInformation);
+        P6ModuleManager.getInstance().getEventPublisher().publish(
+          new JDBCResultSetNextEvent(underlying)
+            .withConnectionId(resultSetInformation.getConnectionId())
+            .withStopWatch(stopWatch)
+            .withThrownException(thrownException)
+            .withSQLWrapper(resultSetInformation)
+        );
+        P6LogQuery.logElapsed(resultSetInformation.getConnectionId(), stopWatch.startTimeMs(), Category.RESULT, resultSetInformation);
       }
     }
   }

@@ -22,6 +22,8 @@ package com.p6spy.engine.spy;
 import com.p6spy.engine.common.P6LogQuery;
 import com.p6spy.engine.common.P6Util;
 import com.p6spy.engine.event.EventManager;
+import com.p6spy.engine.event.EventPublisher;
+import com.p6spy.engine.event.ListenerRegistry;
 import com.p6spy.engine.proxy.GenericInvocationHandler;
 import com.p6spy.engine.spy.option.EnvironmentVariables;
 import com.p6spy.engine.spy.option.P6OptionChangedListener;
@@ -37,13 +39,14 @@ import javax.management.MalformedObjectNameException;
 import javax.management.NotCompliantMBeanException;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public class P6ModuleManager {
+public class P6ModuleManager implements ConnectionWrapperRegistry {
 
   // recreated on each reload
   private final P6OptionsSource[] optionsSources = new P6OptionsSource[] {
@@ -52,6 +55,7 @@ public class P6ModuleManager {
   private final List<P6Factory> factories = new CopyOnWriteArrayList<P6Factory>();
   private final P6MBeansRegistry mBeansRegistry = new P6MBeansRegistry();
   private final EventManager eventManager = new EventManager();
+  private final List<ConnectionWrapper> connectionWrappers = new CopyOnWriteArrayList<ConnectionWrapper>();
 
   private final P6OptionsRepository optionsRepository = new P6OptionsRepository();
 
@@ -264,7 +268,30 @@ public class P6ModuleManager {
     optionsRepository.unregisterOptionChangedListener(listener);
   }
 
-  public EventManager getEventManager() {
+  EventManager getEventManager() {
     return eventManager;
+  }
+
+  public EventPublisher getEventPublisher() {
+    return eventManager;
+  }
+
+  public ListenerRegistry getListenerRegistry() {
+    return eventManager;
+  }
+
+  @Override
+  public void addConnectionWrapper(ConnectionWrapper connectionWrapper) {
+    connectionWrappers.add(connectionWrapper);
+  }
+
+  @Override
+  public void removeConnectionWrapper(ConnectionWrapper connectionWrapper) {
+    connectionWrappers.remove(connectionWrapper);
+  }
+
+  @Override
+  public Collection<ConnectionWrapper> getConnectionWrappers() {
+    return Collections.unmodifiableCollection(connectionWrappers);
   }
 }
